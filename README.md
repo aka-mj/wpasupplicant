@@ -23,14 +23,41 @@ uconn, err := wpasupplicant.Connect("/tmp/our-socket", "/var/run/wpa_supplicant"
 From this point you can start configuring for your network:
 
 ```go
-usock.SetNetworkQuoted(id, "ssid", "foo")
-usock.SetNetworkQuoted(id, "psk", "bar")
-usock.SetNetwork(id, "proto", "WPA2")
-usock.SetNetwork(id, "key_mgmt", "WPA-PSK")
+uconn.SetNetworkQuoted(0, "ssid", "foo")
+uconn.SetNetworkQuoted(0, "psk", "bar")
+uconn.SetNetwork(0, "proto", "WPA2")
+uconn.SetNetwork(0, "key_mgmt", "WPA-PSK")
 ```
 
-How to know when to use SetNetwork vs SetNetworkQuoted? Read the wpa_supplicant.conf
-documentation.
+For a complete example:
+
+```go
+package main
+
+import (
+	"gitlab.com/zfoo/wpasupplicant"
+)
+
+func main() {
+	var (
+		uconn *wpasupplicant.Conn
+		id    int
+	)
+	uconn, _ = wpasupplicant.Connect("/tmp/our-socket", "/var/run/wpa_supplicant")
+	defer uconn.Close()
+	id, _ = uconn.AddNetwork()
+	uconn.SetNetworkQuoted(id, "ssid", "foonet")
+	uconn.SetNetworkQuoted(id, "psk", "pass")
+	uconn.SetNetwork(id, "proto", "WPA2")
+	uconn.SetNetwork(id, "key_mgmt", "WPA-PSK")
+	uconn.SelectNetwork(id)
+}
+
+```
+
+How to know when to use `SetNetwork` vs `SetNetworkQuoted`? Take a look at the wpa_supplicant.conf
+documentation. If it needs to be enclosed in quotes in the configuration file then it needs to be
+quoted here.
 
 https://w1.fi/cgit/hostap/plain/wpa_supplicant/wpa_supplicant.conf
 
