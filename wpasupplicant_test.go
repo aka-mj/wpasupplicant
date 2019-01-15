@@ -325,3 +325,64 @@ func TestReconfigure(t *testing.T) {
 	}
 	conn.Close()
 }
+
+func TestStatus(t *testing.T) {
+	conn, err := Connect(ourSocket, imposter)
+	if err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+	msg := []byte(`bssid=02:00:01:02:03:04
+	ssid=test network
+	pairwise_cipher=CCMP
+	group_cipher=CCMP
+	key_mgmt=WPA-PSK
+	wpa_state=COMPLETED
+	ip_address=192.168.1.21
+	Supplicant PAE state=AUTHENTICATED
+	suppPortStatus=Authorized
+	EAP state=SUCCESS
+	`)
+	reply <- msg
+	if v, err := conn.ListNetworks(); err != nil {
+		t.Fatalf("%v", err)
+	} else if string(msg) != v {
+		t.Fatalf("did not receive expected reply")
+	}
+	conn.Close()
+}
+
+func TestStatusVerbose(t *testing.T) {
+	conn, err := Connect(ourSocket, imposter)
+	if err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+	msg := []byte(`bssid=02:00:01:02:03:04
+	ssid=test network
+	id=0
+	pairwise_cipher=CCMP
+	group_cipher=CCMP
+	key_mgmt=WPA-PSK
+	wpa_state=COMPLETED
+	ip_address=192.168.1.21
+	Supplicant PAE state=AUTHENTICATED
+	suppPortStatus=Authorized
+	heldPeriod=60
+	authPeriod=30
+	startPeriod=30
+	maxStart=3
+	portControl=Auto
+	Supplicant Backend state=IDLE
+	EAP state=SUCCESS
+	reqMethod=0
+	methodState=NONE
+	decision=COND_SUCC
+	ClientTimeout=60
+	`)
+	reply <- msg
+	if v, err := conn.ListNetworks(); err != nil {
+		t.Fatalf("%v", err)
+	} else if string(msg) != v {
+		t.Fatalf("did not receive expected reply")
+	}
+	conn.Close()
+}

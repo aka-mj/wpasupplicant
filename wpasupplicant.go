@@ -250,3 +250,25 @@ func (c *Conn) NumOfNetworks() (int, error) {
 func (c *Conn) Reconfigure() error {
 	return c.sendRequestOk(fmt.Sprintf("RECONFIGURE"))
 }
+
+// Status information for current WPA/EAPOL/EAP connection.
+func (c *Conn) Status() (string, error) {
+	var (
+		reply []byte
+		err   error
+	)
+
+	reply, err = c.sendRequest("STATUS")
+	return string(reply), err
+}
+
+// StatusVerbose returns more information than Status() (on some machines).
+func (c *Conn) StatusVerbose() (string, error) {
+	var (
+		reply []byte
+		err   error
+	)
+
+	reply, err = c.sendRequest("STATUS-VERBOSE")
+	return string(reply), err
+}
