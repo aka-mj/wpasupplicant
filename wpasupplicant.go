@@ -178,7 +178,7 @@ func (c *Conn) AddNetwork() (id int, err error) {
 		reply []byte
 	)
 
-	if reply, err = c.sendRequest(fmt.Sprintf("ADD_NETWORK")); err != nil {
+	if reply, err = c.sendRequest("ADD_NETWORK"); err != nil {
 		return -1, err
 	}
 	return strconv.Atoi(strings.TrimSpace(string(reply)))
@@ -211,12 +211,12 @@ func (c *Conn) DisableNetwork(id int) error {
 
 // Reassociate forces a reassociation.
 func (c *Conn) Reassociate() error {
-	return c.sendRequestOk(fmt.Sprintf("REASSOCIATE"))
+	return c.sendRequestOk("REASSOCIATE")
 }
 
 // Reconnect will attempt to connect if in a disconnected state.
 func (c *Conn) Reconnect() error {
-	return c.sendRequestOk(fmt.Sprintf("RECONNECT"))
+	return c.sendRequestOk("RECONNECT")
 }
 
 // ListNetworks returns a list of configured networks.
@@ -226,7 +226,7 @@ func (c *Conn) ListNetworks() (string, error) {
 		err   error
 	)
 
-	reply, err = c.sendRequest(fmt.Sprintf("LIST_NETWORKS"))
+	reply, err = c.sendRequest("LIST_NETWORKS")
 	return string(reply), err
 }
 
@@ -248,7 +248,7 @@ func (c *Conn) NumOfNetworks() (int, error) {
 // Reconfigure forces wpa_supplicant to re-read its configuration data.
 // This will wipe out any networks configured at run time.
 func (c *Conn) Reconfigure() error {
-	return c.sendRequestOk(fmt.Sprintf("RECONFIGURE"))
+	return c.sendRequestOk("RECONFIGURE")
 }
 
 // Status information for current WPA/EAPOL/EAP connection.
