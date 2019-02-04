@@ -81,7 +81,9 @@ func Connect(lsock, rsock string) (*Conn, error) {
 // Close the socket connection.
 func (c *Conn) Close() error {
 	var err error
-	err = c.uconn.Close()
+	if c.ok() {
+		err = c.uconn.Close()
+	}
 	// We ignore the error returned here, we should have permissions to remove
 	// the file and it should still exist. If the permissions changed there
 	// is little we can do here. If the file was deleted by some external
