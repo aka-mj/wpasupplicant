@@ -2,6 +2,7 @@
 
 [![ISC License](https://img.shields.io/badge/license-ISC-blue.svg)](https://gitlab.com/zfoo/wpasupplicant/blob/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/gitlab.com/zfoo/wpasupplicant)](https://goreportcard.com/report/gitlab.com/zfoo/wpasupplicant)
+[![GoDoc](https://godoc.org/gitlab.com/zfoo/wpasupplicant?status.svg)](https://godoc.org/gitlab.com/zfoo/wpasupplicant)
 
 Package wpasupplicant provides a control interface to a wpa_supplicant process.
 
