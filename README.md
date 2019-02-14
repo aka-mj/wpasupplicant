@@ -17,7 +17,7 @@ ctrl_interface=/var/run/wpa_supplicant
 To open a connection:
 
 ```go
-uconn, err := wpasupplicant.Connect("/tmp/our-socket", "/var/run/wpa_supplicant")
+uconn, err := wpasupplicant.Connect("/var/run/wpa_supplicant/wlan0")
 ```
 
 From this point you can start configuring for your network:
@@ -43,7 +43,7 @@ func main() {
 		uconn *wpasupplicant.Conn
 		id    int
 	)
-	uconn, _ = wpasupplicant.Connect("/tmp/our-socket", "/var/run/wpa_supplicant")
+	uconn, _ = wpasupplicant.Connect("/var/run/wpa_supplicant/wlan0")
 	defer uconn.Close()
 	id, _ = uconn.AddNetwork()
 	uconn.SetNetworkQuoted(id, "ssid", "foonet")
