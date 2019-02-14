@@ -35,6 +35,7 @@ package wpasupplicant
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"os"
 	"strconv"
@@ -62,17 +63,24 @@ func (c *Conn) ok() bool {
 }
 
 // Connect creates a Unix socket connection to the wpa_supplicant process.
-// The rsock is the wpa_supplicant process socket, while lsock is the path of our socket.
-func Connect(lsock, rsock string) (*Conn, error) {
+// The rsock is the wpa_supplicant process socket.
+func Connect(rsock string) (*Conn, error) {
 	var (
-		uc  *Conn
-		err error
+		uc    *Conn
+		err   error
+		local *os.File
 	)
 	uc = &Conn{}
 
-	uc.localSock = lsock
+	local, err = ioutil.TempFile("/tmp", "wpa_supplicant")
+	if err != nil {
+		return nil, err
+	}
+	os.Remove(local.Name())
+
+	uc.localSock = local.Name()
 	uc.uconn, err = net.DialUnix("unixgram",
-		&net.UnixAddr{Name: uc.localSock, Net: "unixgram"},
+		&net.UnixAddr{Name: local.Name(), Net: "unixgram"},
 		&net.UnixAddr{Name: rsock, Net: "unixgram"})
 
 	return uc, err
@@ -191,6 +199,11 @@ func (c *Conn) RemoveNetwork(id int) error {
 	return c.sendRequestOk(fmt.Sprintf("REMOVE_NETWORK %v", id))
 }
 
+// RemoveAllNetworks removes all networks.
+func (c *Conn) RemoveAllNetworks() error {
+	return c.sendRequestOk("REMOVE_NETWORK all")
+}
+
 // SetGlobalParameter sends a 'SET' request to wpa_supplicant.
 func (c *Conn) SetGlobalParameter(field, value string) error {
 	return c.sendRequestOk(fmt.Sprintf("SET %v %v", field, value))
@@ -206,9 +219,19 @@ func (c *Conn) EnableNetwork(id int) error {
 	return c.sendRequestOk(fmt.Sprintf("ENABLE_NETWORK %v", id))
 }
 
+// EnableAllNetworks enables all networks.
+func (c *Conn) EnableAllNetworks() error {
+	return c.sendRequestOk("ENABLE_NETWORK all")
+}
+
 // DisableNetwork disables a network.
 func (c *Conn) DisableNetwork(id int) error {
 	return c.sendRequestOk(fmt.Sprintf("DISABLE_NETWORK %v", id))
+}
+
+// DisableAllNetworks disables all networks.
+func (c *Conn) DisableAllNetworks() error {
+	return c.sendRequestOk("DISABLE_NETWORK all")
 }
 
 // Reassociate forces a reassociation.
@@ -272,5 +295,61 @@ func (c *Conn) StatusVerbose() (string, error) {
 	)
 
 	reply, err = c.sendRequest("STATUS-VERBOSE")
+	return string(reply), err
+}
+
+// Ping is used to test whether wpa_supplicant is replying to the control
+// interface command. It returns nil if the connection is open and
+// processing commands.
+func (c *Conn) Ping() error {
+	var (
+		reply []byte
+		err   error
+	)
+
+	if reply, err = c.sendRequest("PING"); err != nil {
+		return err
+	}
+	if !bytes.Equal([]byte("PONG\n"), reply) {
+		return fmt.Errorf("Received unexpected reply: %v", string(reply))
+	}
+	return nil
+}
+
+// SaveConfig saves the current configuration.
+func (c *Conn) SaveConfig() error {
+	return c.sendRequestOk("SAVE_CONFIG")
+}
+
+// Interfaces list available interfaces.
+func (c *Conn) Interfaces() (string, error) {
+	var (
+		reply []byte
+		err   error
+	)
+
+	reply, err = c.sendRequest("INTERFACES")
+	return string(reply), err
+}
+
+// Ifname returns the current interface name.
+func (c *Conn) Ifname() (string, error) {
+	var (
+		reply []byte
+		err   error
+	)
+
+	reply, err = c.sendRequest("IFNAME")
+	return string(reply), err
+}
+
+// BSS returns detailed per-BSS scan results.
+func (c *Conn) BSS(id int) (string, error) {
+	var (
+		reply []byte
+		err   error
+	)
+
+	reply, err = c.sendRequest(fmt.Sprintf("BSS %v", id))
 	return string(reply), err
 }

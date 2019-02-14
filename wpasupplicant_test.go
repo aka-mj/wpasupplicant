@@ -4,7 +4,6 @@ package wpasupplicant
 
 import (
 	"fmt"
-	"math/rand"
 	"net"
 	"os"
 	"testing"
@@ -12,8 +11,7 @@ import (
 )
 
 var (
-	imposter  = "/tmp/wpa_supplicant_imposter"
-	ourSocket string
+	imposter = "/tmp/wpa_supplicant_imposter"
 )
 
 // acts as a fake wpa_supplicant process
@@ -63,8 +61,6 @@ func listen(reply chan []byte, exit <-chan int) {
 var reply chan []byte
 
 func TestMain(m *testing.M) {
-	rd := rand.New(rand.NewSource(99))
-	ourSocket = fmt.Sprintf("/tmp/wpa_supplicant%v", rd.Int63())
 	reply = make(chan []byte, 2)
 	exit := make(chan int, 1)
 	go listen(reply, exit)
@@ -76,7 +72,7 @@ func TestMain(m *testing.M) {
 
 }
 func TestConnect(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -84,7 +80,7 @@ func TestConnect(t *testing.T) {
 }
 
 func TestDoubleClose(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -120,7 +116,7 @@ func TestCheckReplyOk(t *testing.T) {
 }
 
 func TestSetNetwork(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -132,7 +128,7 @@ func TestSetNetwork(t *testing.T) {
 
 func TestSetNetworkQuoted(t *testing.T) {
 	time.Sleep(time.Second)
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -143,7 +139,7 @@ func TestSetNetworkQuoted(t *testing.T) {
 }
 
 func TestWepKeys(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -186,7 +182,7 @@ func TestConn_GetNetwork(t *testing.T) {
 	}
 
 	// connect
-	c, err := Connect(ourSocket, imposter)
+	c, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -209,7 +205,7 @@ func TestConn_GetNetwork(t *testing.T) {
 }
 
 func TestAddNetwork(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -223,7 +219,7 @@ func TestAddNetwork(t *testing.T) {
 }
 
 func TestRemoveNetwork(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -234,7 +230,7 @@ func TestRemoveNetwork(t *testing.T) {
 }
 
 func TestSetGlobalParameters(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -245,7 +241,7 @@ func TestSetGlobalParameters(t *testing.T) {
 }
 
 func TestSelectEnableDisableNetwork(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -262,7 +258,7 @@ func TestSelectEnableDisableNetwork(t *testing.T) {
 }
 
 func TestReassociate(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -273,7 +269,7 @@ func TestReassociate(t *testing.T) {
 }
 
 func TestReconnect(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -284,7 +280,7 @@ func TestReconnect(t *testing.T) {
 }
 
 func TestListNetworks(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -303,7 +299,7 @@ func TestListNetworks(t *testing.T) {
 }
 
 func TestNumOfNetworks(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -316,7 +312,7 @@ func TestNumOfNetworks(t *testing.T) {
 }
 
 func TestReconfigure(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -327,7 +323,7 @@ func TestReconfigure(t *testing.T) {
 }
 
 func TestStatus(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -343,7 +339,7 @@ func TestStatus(t *testing.T) {
 	EAP state=SUCCESS
 	`)
 	reply <- msg
-	if v, err := conn.ListNetworks(); err != nil {
+	if v, err := conn.Status(); err != nil {
 		t.Fatalf("%v", err)
 	} else if string(msg) != v {
 		t.Fatalf("did not receive expected reply")
@@ -352,7 +348,7 @@ func TestStatus(t *testing.T) {
 }
 
 func TestStatusVerbose(t *testing.T) {
-	conn, err := Connect(ourSocket, imposter)
+	conn, err := Connect(imposter)
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
@@ -379,7 +375,7 @@ func TestStatusVerbose(t *testing.T) {
 	ClientTimeout=60
 	`)
 	reply <- msg
-	if v, err := conn.ListNetworks(); err != nil {
+	if v, err := conn.StatusVerbose(); err != nil {
 		t.Fatalf("%v", err)
 	} else if string(msg) != v {
 		t.Fatalf("did not receive expected reply")

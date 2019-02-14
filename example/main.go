@@ -9,7 +9,7 @@ func main() {
 		uconn *wpasupplicant.Conn
 		id    int
 	)
-	uconn, _ = wpasupplicant.Connect("/tmp/our-socket", "/var/run/wpa_supplicant")
+	uconn, _ = wpasupplicant.Connect("/var/run/wpa_supplicant")
 	defer uconn.Close()
 	id, _ = uconn.AddNetwork()
 	uconn.SetNetworkQuoted(id, "ssid", "foonet")
