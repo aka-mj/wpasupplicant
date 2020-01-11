@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gitlab.com/zfoo/wpasupplicant"
+	"gitlab.com/michaeljohn/wpasupplicant"
 )
 
 func main() {
