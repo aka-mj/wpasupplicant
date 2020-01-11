@@ -1,1 +1,1 @@
-module gitlab.com/zfoo/wpasupplicant
+module gitlab.com/michaeljohn/wpasupplicant

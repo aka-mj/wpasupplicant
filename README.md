@@ -1,8 +1,8 @@
 # Control Interface for wpa_supplicant in Go
 
-[![ISC License](https://img.shields.io/badge/license-ISC-blue.svg)](https://gitlab.com/zfoo/wpasupplicant/blob/master/LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/gitlab.com/zfoo/wpasupplicant)](https://goreportcard.com/report/gitlab.com/zfoo/wpasupplicant)
-[![GoDoc](https://godoc.org/gitlab.com/zfoo/wpasupplicant?status.svg)](https://godoc.org/gitlab.com/zfoo/wpasupplicant)
+[![ISC License](https://img.shields.io/badge/license-ISC-blue.svg)](https://gitlab.com/michaeljohn/wpasupplicant/blob/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/gitlab.com/michaeljohn/wpasupplicant)](https://goreportcard.com/report/gitlab.com/michaeljohn/wpasupplicant)
+[![GoDoc](https://godoc.org/gitlab.com/michaeljohn/wpasupplicant?status.svg)](https://godoc.org/gitlab.com/michaeljohn/wpasupplicant)
 
 Package wpasupplicant provides a control interface to a wpa_supplicant process.
 
@@ -36,7 +36,7 @@ For a complete example:
 package main
 
 import (
-	"gitlab.com/zfoo/wpasupplicant"
+	"gitlab.com/michaeljohn/wpasupplicant"
 )
 
 func main() {
