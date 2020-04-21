@@ -12,7 +12,7 @@ Example of a wpa_supplicant.conf:
 
 To open a connection:
 
-	uconn, err := wpasupplicant.Connect("/tmp/our-socket", "/var/run/wpa_supplicant")
+	uconn, err := wpasupplicant.Connect("/var/run/wpa_supplicant")
 
 From this point you can start configuring for your network:
 
